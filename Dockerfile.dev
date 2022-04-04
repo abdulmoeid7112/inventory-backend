@@ -1,0 +1,30 @@
+FROM golang:1.17
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        gettext-base \
+    && apt-get install unzip \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /...
+
+ENV GO111MODULE=on
+
+RUN apt-get -y update && apt-get -y install jq curl
+
+ENV PROTOC_ZIP=protoc-3.14.0-linux-x86_64.zip
+
+RUN curl -OL https://github.com/protocolbuffers/protobuf/releases/download/v3.14.0/$PROTOC_ZIP \
+    &&  unzip -o $PROTOC_ZIP -d /usr/local bin/protoc \
+    &&  unzip -o $PROTOC_ZIP -d /usr/local 'include/*' \
+    && rm -f $PROTOC_ZIP
+
+RUN go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest \
+    && go install golang.org/x/tools/cmd/goimports@latest \
+    && go install google.golang.org/protobuf/cmd/protoc-gen-go@latest \
+    && go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
+
+ENV PATH="$PATH:$(go env GOPATH)/bin"
+
+RUN CGO_ENABLED=0
+
+ARG DEVELOPER

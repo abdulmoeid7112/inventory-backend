@@ -1,0 +1,53 @@
+syntax = "proto3";
+
+package inventoryPB;
+
+option go_package = "inventory.pb";
+
+import "google/protobuf/empty.proto";
+
+message Item {
+  string id = 1;
+  string userID = 2;
+  string item_name = 3 ;
+  string description = 4 ;
+  string image_url = 5 ;
+  int64 quantity = 6 ;
+  float price = 7 ;
+}
+
+message AddInventoryItemRequest {
+  Item item = 1 ;
+}
+
+message GetInventoryItemRequest {
+  string id = 1 ;
+
+}
+
+message DeleteInventoryItemRequest {
+  string id = 1 ;
+}
+
+message UpdateInventoryItemRequest {
+  Item item = 1 ;
+
+}
+
+message ListInventoryItemsRequest{
+  string userID = 1;
+  int64 lim = 2 ;
+  int64 off = 3 ;
+}
+
+message ListInventoryItemsResponse{
+  repeated Item items = 1;
+}
+
+service InventoryService {
+  rpc AddInventoryItem (AddInventoryItemRequest) returns (Item){}
+  rpc GetInventoryItem (GetInventoryItemRequest) returns (Item){}
+  rpc DeleteInventoryItem (DeleteInventoryItemRequest) returns (google.protobuf.Empty){}
+  rpc UpdateInventoryItem (UpdateInventoryItemRequest) returns (Item){}
+  rpc ListInventoryItems (ListInventoryItemsRequest) returns (ListInventoryItemsResponse){}
+}
